@@ -101,7 +101,9 @@ def fill_cell(cell, num):
     # 같은 행열블록 후보지우기
     pass
 
+
 ans = solve_sdk()
+
 for i in range(9):
     ans[i] = list(map(lambda x: str(x), ans[i]))
 for linn in ans:
