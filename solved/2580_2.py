@@ -1,6 +1,7 @@
 # sdk = []
 # for i in range(9):
 #     sdk.append(list(map(lambda x: int(x), input().split())))
+counter = 0
 
 sdk = [
     [5, 0, 0, 0, 4, 0, 0, 8, 1],
@@ -13,6 +14,7 @@ sdk = [
     [0, 0, 3, 0, 2, 0, 1, 0, 0],
     [8, 7, 0, 0, 9, 0, 0, 0, 5]
 ]
+
 
 def checkCol(x, y):  # 세로줄 확인
     global sdk
@@ -66,30 +68,19 @@ def getCandidates(nFilled):
     return a
 
 
-def step():
-    global sdk
-    for y in range(9):  # 세로줄
-        for x in range(9):  # 가로줄
-            if sdk[y][x] == 0:
-                nFilled = checkFilledNumber(x, y)
-                #print(x, y, getCandidates(nFilled))
-                if len(nFilled) == 8:
-                    sdk[y][x] = getCandidates(nFilled)[0]
-                elif len(nFilled) == 0:
-                    return 0
-                else:  # 백트래킹
-                    sdk_backup = sdk
-                    for cand in getCandidates(nFilled):
-                        sdk[y][x] = cand
-                        step()
-                    sdk = sdk_backup
-    if sudoku_complete:
-        return 0
-    else:
-        step()
+def current_sdk():
+    ans = sdk[:]
+    print('====================')
+    print(len(ans))
+    for i in range(9):
+        ans[i] = list(map(lambda x: str(x), ans[i]))
+    for linn in ans:
+        print(" ".join(linn))
+    print('--------------------')
+    print("")
 
 
-def sudoku_complete():
+def isSdkComplete():
     for row in sdk:
         for x in row:
             if x == 0:
@@ -97,14 +88,39 @@ def sudoku_complete():
     return 1
 
 
+def step():
+    global sdk, counter
+    for y in range(9):  # 세로줄
+        for x in range(9):  # 가로줄
+            if sdk[y][x] == 0:
+                nFilled = checkFilledNumber(x, y)
+                # print(x, y, getCandidates(nFilled))
+                current_sdk()
+                if len(nFilled) == 8:
+                    sdk[y][x] = getCandidates(nFilled)[0]
+                elif len(nFilled) == 0:
+                    return 0
+                else:  # 백트래킹
+                    sdk_backup = sdk
+                    if counter > 10:
+                        return 0
+                    counter += 1
+                    for cand in getCandidates(nFilled):
+                        sdk[y][x] = cand
+                        step()
+                    sdk = sdk_backup
+
+
+def main():
+    step()
+    if isSdkComplete():
+        return sdk
+    else:
+        # 일단 하나 넣어보고
+        # 안되면 뒤로가고..
+
 step()
 
-ans = sdk[:]
-print(len(ans))
-for i in range(9):
-    ans[i] = list(map(lambda x: str(x), ans[i]))
-for linn in ans:
-    print(" ".join(linn))
 
 # 이 방법으로는 답이 두개이상인 문제를 풀 수 없다.
 # 백트래킹이 잘 작동하지 않는다. 오답처리됨.
@@ -113,4 +129,3 @@ for linn in ans:
 # 실행 전 후가 같으면 백트래킹 돌입
 # 백트래킹해서 성공 -> 반환
 # 백트래킹해서 실패 -> 이전 지점으로 돌아옴.(-1을 리턴?)
-# 
